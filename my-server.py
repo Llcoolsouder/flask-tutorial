@@ -31,7 +31,7 @@ def highscores():
         highscores_csv = csv.reader(highscores_file)
         for row in highscores_csv:
             highscores.append(row)
-    highscores.sort(reverse=True, key=lambda entry: entry[1])
+    highscores.sort(reverse=True, key=lambda entry: int(entry[1]))
     return render_template('highscores.html', highscores=highscores)
 
 if __name__ == '__main__':

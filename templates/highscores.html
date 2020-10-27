@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<h1>High Scores</h1>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Score</th>
+    </tr>
+    {% for name, score in highscores %}
+        <tr>
+            <td>{{ name }}</td>
+            <td>{{ score }}</td>
+        </tr>
+    {% endfor %}
+</table>
+</html>

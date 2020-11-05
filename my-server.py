@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, send_from_directory, render_template
+from flask import Flask, request, redirect, send_from_directory, render_template, make_response
 import csv
 
 highscores_path = 'highscores.csv'
@@ -33,6 +33,18 @@ def highscores():
             highscores.append(row)
     highscores.sort(reverse=True, key=lambda entry: int(entry[1]))
     return render_template('highscores.html', highscores=highscores)
+
+@app.route('/setcookie', methods=['POST', 'GET'])
+def set_cookie():
+    resp = make_response(send_from_directory('static', 'set-cookie.html'))
+    if request.method == 'POST':
+        resp.set_cookie('username', request.form['name'])
+    return resp
+
+@app.route('/viewcookie')
+def view_cookie():
+    name = request.cookies.get('username')
+    return f'<h1>{name}</h1>'
 
 if __name__ == '__main__':
     app.run(debug = True)

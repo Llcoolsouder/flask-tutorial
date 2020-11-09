@@ -1,8 +1,23 @@
-from flask import Flask, request, redirect, send_from_directory, render_template, make_response
+from flask import (
+    Flask,
+    request,
+    redirect,
+    send_from_directory,
+    render_template,
+    make_response,
+    session
+)
 import csv
+import string
+import secrets
+
+def generate_secret():
+    usable_characters = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(usable_characters) for i in range(64))
 
 highscores_path = 'highscores.csv'
 app = Flask(__name__)
+app.secret_key = generate_secret()
 
 @app.route('/')
 def homepage():
@@ -34,17 +49,35 @@ def highscores():
     highscores.sort(reverse=True, key=lambda entry: int(entry[1]))
     return render_template('highscores.html', highscores=highscores)
 
-@app.route('/setcookie', methods=['POST', 'GET'])
+@app.route('/setcookie/', methods=['POST', 'GET'])
 def set_cookie():
     resp = make_response(send_from_directory('static', 'set-cookie.html'))
     if request.method == 'POST':
         resp.set_cookie('username', request.form['name'])
     return resp
 
-@app.route('/viewcookie')
+@app.route('/viewcookie/')
 def view_cookie():
     name = request.cookies.get('username')
     return f'<h1>{name}</h1>'
+
+
+@app.route('/session/')
+def render_Session_page():
+    return render_template('session.html', username=session['username'])
+
+@app.route('/login/', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+        return redirect('/session/')
+    else:
+        return send_from_directory('static', 'login.html')
+
+@app.route('/logout/')
+def logout():
+    session.pop('username', None)
+    return redirect('/login')
 
 if __name__ == '__main__':
     app.run(debug = True)
